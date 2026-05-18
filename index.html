@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Mind | Cozy Personal Dashboard & Calendar</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for cute & cozy aesthetic icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Playfair Display, Space Grotesk & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        cozyBg: '#FAF6F0',         // Soft linen cream warm base
+                        cozyWhite: '#FCFBF9',      // Fresh milk white
+                        cozyPinkLight: '#F5E6E8',  // Whisper-soft pink
+                        cozyPink: '#E8C5C8',       // Dusty clay rose
+                        cozyPinkDeep: '#D4A373',   // Warm honey terracotta
+                        cozyBrownLight: '#D7CCC8', // Soft warm oatmeal tan
+                        cozyBrown: '#8D6E63',      // Muted brown earth
+                        cozyBrownDeep: '#4E342E',  // Dark espresso bean for primary text
+                        cozyAccent: '#A5C4D4',     // Muted morning sky blue
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: radial-gradient(circle at 50% 0%, #FAF0E6 0%, #FAF6F0 100%);
+            color: #4E342E;
+            min-height: 100vh;
+        }
+        /* Custom scrollbars matching the brown/pink palette */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E8C5C8;
+            border-radius: 99px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D7CCC8;
+        }
+        .cozy-card {
+            background: rgba(252, 251, 249, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(141, 110, 99, 0.12);
+            box-shadow: 0 4px 20px -2px rgba(141, 110, 99, 0.05);
+        }
+        .tab-btn.active {
+            background-color: #F5E6E8;
+            border-color: #E8C5C8;
+            color: #4E342E;
+            font-weight: 600;
+        }
+        /* Polaroid photo hover effects */
+        .polaroid-frame {
+            box-shadow: 0 10px 25px -10px rgba(141, 110, 99, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .polaroid-frame:hover {
+            transform: translateY(-4px) rotate(1deg);
+            box-shadow: 0 15px 30px -8px rgba(141, 110, 99, 0.2);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased overflow-x-hidden">
+
+    <!-- App Wrapper -->
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- SIDEBAR (Aesthetic Soft Earth Tones) -->
+        <aside class="w-64 cozy-card border-r border-[#8D6E63]/10 flex flex-col justify-between hidden md:flex z-20 m-3 rounded-3xl">
+            <div class="p-6">
+                <!-- Branding -->
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#E8C5C8] via-[#F5E6E8] to-[#D7CCC8] flex items-center justify-center shadow-md">
+                        <i class="fa-solid fa-cloud-sun text-[#4E342E] text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-serif font-bold text-lg tracking-wide text-[#4E342E]">My Mind Space</h1>
+                        <p class="text-xs text-[#8D6E63] font-medium italic">aesthetic os v2.6</p>
+                    </div>
+                </div>
+
+                <!-- Navigation List -->
+                <nav class="space-y-2">
+                    <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-2xl border border-transparent text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#F5E6E8]/40 transition-all duration-200 text-sm font-medium active">
+                        <i class="fa-solid fa-house-user text-base"></i>
+                        <span>Home & Vision</span>
+                    </button>
+                    <button onclick="switchTab('calendar-tab')" id="btn-calendar-tab" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-2xl border border-transparent text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#F5E6E8]/40 transition-all duration-200 text-sm font-medium">
+                        <i class="fa-solid fa-calendar-days text-base"></i>
+                        <span>Cozy Calendar</span>
+                    </button>
+                    <button onclick="switchTab('habits')" id="btn-habits" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-2xl border border-transparent text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#F5E6E8]/40 transition-all duration-200 text-sm font-medium">
+                        <i class="fa-solid fa-heart text-base"></i>
+                        <span>Habit Matrix</span>
+                    </button>
+                    <button onclick="switchTab('horizons')" id="btn-horizons" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-2xl border border-transparent text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#F5E6E8]/40 transition-all duration-200 text-sm font-medium">
+                        <i class="fa-solid fa-compass text-base"></i>
+                        <span>Time Horizons</span>
+                    </button>
+                    <button onclick="switchTab('finance')" id="btn-finance" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-2xl border border-transparent text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#F5E6E8]/40 transition-all duration-200 text-sm font-medium">
+                        <i class="fa-solid fa-coins text-base"></i>
+                        <span>Finances</span>
+                    </button>
+                    <button onclick="switchTab('books')" id="btn-books" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-2xl border border-transparent text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#F5E6E8]/40 transition-all duration-200 text-sm font-medium">
+                        <i class="fa-solid fa-book-open text-base"></i>
+                        <span>Library & Bucket</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Footer & Reset -->
+            <div class="p-4 border-t border-[#8D6E63]/10 space-y-2">
+                <button onclick="openSyncSettingsModal()" class="w-full bg-[#FAF0E6] hover:bg-[#E8C5C8]/40 border border-[#E8C5C8]/40 rounded-2xl p-3 flex items-center justify-between text-xs text-[#4E342E] transition font-semibold shadow-sm">
+                    <div class="flex items-center space-x-2">
+                        <i id="sync-icon-sidebar" class="fa-solid fa-cloud text-[#8D6E63]"></i>
+                        <span id="sync-status-text">Set Up Cloud Sync</span>
+                    </div>
+                    <i class="fa-solid fa-gear text-xs opacity-60"></i>
+                </button>
+                <div class="bg-[#F5E6E8]/50 rounded-2xl p-3 flex items-center justify-between text-xs text-[#8D6E63]">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2 bg-emerald-400 h-2 rounded-full"></span>
+                        <span>Local Backup Safe</span>
+                    </div>
+                    <button onclick="showConfirmModal('Reset Mind Space?', 'This will clear all custom photo frames, habits, finances, and calendar events.', clearAllData)" class="hover:text-red-500 transition" title="Reset Dashboard">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN VIEWPORT -->
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            
+            <!-- COZY HEADER (Streamlined minimalism without Burnout or Energy metrics) -->
+            <header class="cozy-card border-b border-[#8D6E63]/10 p-5 sticky top-0 z-10 flex items-center justify-between m-3 rounded-3xl">
+                <!-- Left Header Details -->
+                <div class="flex items-center space-x-4">
+                    <div class="md:hidden w-10 h-10 rounded-2xl bg-[#E8C5C8] flex items-center justify-center">
+                        <i class="fa-solid fa-cloud-sun text-[#4E342E]"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-[#8D6E63] font-bold uppercase tracking-wider" id="current-day-label">MONDAY</div>
+                        <h2 class="font-serif font-bold text-2xl text-[#4E342E]" id="current-date-label">May 18, 2026</h2>
+                    </div>
+                </div>
+
+                <!-- Mobile Navigation Bar -->
+                <div class="md:hidden flex space-x-2">
+                    <button onclick="switchTab('dashboard')" class="p-2 text-[#8D6E63] hover:text-[#4E342E]"><i class="fa-solid fa-house-user"></i></button>
+                    <button onclick="switchTab('calendar-tab')" class="p-2 text-[#8D6E63] hover:text-[#4E342E]"><i class="fa-solid fa-calendar-days"></i></button>
+                    <button onclick="switchTab('habits')" class="p-2 text-[#8D6E63] hover:text-[#4E342E]"><i class="fa-solid fa-heart"></i></button>
+                    <button onclick="switchTab('horizons')" class="p-2 text-[#8D6E63] hover:text-[#4E342E]"><i class="fa-solid fa-compass"></i></button>
+                    <button onclick="switchTab('finance')" class="p-2 text-[#8D6E63] hover:text-[#4E342E]"><i class="fa-solid fa-coins"></i></button>
+                    <button onclick="switchTab('books')" class="p-2 text-[#8D6E63] hover:text-[#4E342E]"><i class="fa-solid fa-book-open"></i></button>
+                </div>
+            </header>
+
+            <!-- VIEWPORT CONTENT -->
+            <div class="p-4 md:p-8 space-y-8 flex-1">
+                
+                <!-- TAB 1: DAILY CONTROL / HOME -->
+                <section id="tab-dashboard" class="space-y-6">
+                    <!-- Cozy Morning Prompt Card -->
+                    <div class="bg-gradient-to-r from-[#F5E6E8] via-[#FAF0E6] to-[#FAF6F0] rounded-3xl p-6 border border-[#E8C5C8]/50 relative overflow-hidden">
+                        <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-[#E8C5C8]/20 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                            <div>
+                                <span class="px-2.5 py-1 text-xs font-semibold text-[#8D6E63] bg-white/70 rounded-full border border-[#E8C5C8]/30">Daily Intention</span>
+                                <h3 class="font-serif italic font-semibold text-2xl mt-2 text-[#4E342E]">"Breathe in calm, breathe out clutter. Your mind is a soft room."</h3>
+                                <p class="text-[#8D6E63] text-sm mt-1">Focus on alignment, stick to your small habits, and load your calendar gently today.</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="simulateMorningCheckin()" class="px-4 py-2 bg-white hover:bg-[#F5E6E8] border border-[#E8C5C8] text-[#4E342E] rounded-xl text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-mug-hot"></i>
+                                    <span>Morning Check-in</span>
+                                </button>
+                                <button onclick="simulateNightCheckin()" class="px-4 py-2 bg-[#8D6E63] hover:bg-[#4E342E] text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-moon"></i>
+                                    <span>Night Check-in</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Polaroids / Vision Board Frame -->
+                    <div class="cozy-card rounded-3xl p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h4 class="font-serif font-bold text-xl text-[#4E342E]">Aesthetic Vision Board</h4>
+                                <p class="text-xs text-[#8D6E63]">Visual cues to keep your mind inspired and grounded (Optimized Compression)</p>
+                            </div>
+                            <button onclick="triggerPhotoUpload()" class="px-3 py-1.5 bg-[#FAF0E6] hover:bg-[#E8C5C8] border border-[#E8C5C8] text-xs font-semibold text-[#4E342E] rounded-xl transition flex items-center space-x-1">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Add Photo</span>
+                            </button>
+                            <!-- Hidden input for file upload -->
+                            <input type="file" id="vision-photo-uploader" class="hidden" accept="image/*" onchange="handlePhotoUpload(event)">
+                        </div>
+
+                        <!-- Vision Grid of Polaroids -->
+                        <div id="vision-board-container" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <!-- Polaroids loaded dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Left Side: Focus and Interactive Tasks -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <!-- Focus Nodes -->
+                            <div class="cozy-card rounded-3xl p-6">
+                                <h4 class="font-serif font-bold text-lg text-[#4E342E] mb-4 flex items-center space-x-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-[#E8C5C8]"></span>
+                                    <span>Top 3 Focus Nodes</span>
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="bg-[#FAF6F0]/60 rounded-2xl border border-[#8D6E63]/10 p-4">
+                                        <div class="text-xs text-[#8D6E63] font-semibold uppercase tracking-wider">Mindfulness Focus</div>
+                                        <input type="text" id="focus1" class="w-full bg-transparent border-none mt-2 text-[#4E342E] font-medium focus:outline-none focus:ring-0 placeholder-[#8D6E63]/40" placeholder="Intentional action..." onchange="updateFocus('focus1')">
+                                    </div>
+                                    <div class="bg-[#FAF6F0]/60 rounded-2xl border border-[#8D6E63]/10 p-4">
+                                        <div class="text-xs text-[#E8C5C8] font-bold uppercase tracking-wider">Core Project</div>
+                                        <input type="text" id="focus2" class="w-full bg-transparent border-none mt-2 text-[#4E342E] font-medium focus:outline-none focus:ring-0 placeholder-[#8D6E63]/40" placeholder="Creating value..." onchange="updateFocus('focus2')">
+                                    </div>
+                                    <div class="bg-[#FAF6F0]/60 rounded-2xl border border-[#8D6E63]/10 p-4">
+                                        <div class="text-xs text-emerald-600 font-bold uppercase tracking-wider">Physical/Rest</div>
+                                        <input type="text" id="focus3" class="w-full bg-transparent border-none mt-2 text-[#4E342E] font-medium focus:outline-none focus:ring-0 placeholder-[#8D6E63]/40" placeholder="Gentle recovery..." onchange="updateFocus('focus3')">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Interactive Task System -->
+                            <div class="cozy-card rounded-3xl p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="font-serif font-bold text-lg text-[#4E342E] flex items-center space-x-2">
+                                        <i class="fa-solid fa-seedling text-[#E8C5C8]"></i>
+                                        <span>Active Daily Actions</span>
+                                    </h4>
+                                    <span class="text-xs px-2.5 py-1 bg-[#F5E6E8] text-[#4E342E] rounded-lg font-mono font-semibold" id="task-ratio">0/0 Saved</span>
+                                </div>
+                                
+                                <!-- Add Task Input -->
+                                <div class="flex items-center space-x-2 mb-4">
+                                    <input type="text" id="new-task-title" class="flex-1 bg-white border border-[#8D6E63]/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#E8C5C8] text-[#4E342E] placeholder-[#8D6E63]/40 shadow-sm" placeholder="Commit new task to daily memory...">
+                                    <button onclick="addTask()" class="h-10 px-4 bg-[#E8C5C8] hover:bg-[#8D6E63] text-[#4E342E] hover:text-white font-medium rounded-xl text-sm transition flex items-center space-x-1.5 shrink-0 shadow-sm">
+                                        <i class="fa-solid fa-plus"></i>
+                                        <span>Commit</span>
+                                    </button>
+                                </div>
+
+                                <!-- Dynamic Task List -->
+                                <div id="tasks-list-container" class="space-y-2 max-h-[300px] overflow-y-auto pr-2">
+                                    <!-- Dynamic tasks appear here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Side: Gym check-in and Wins -->
+                        <div class="space-y-6">
+                            <!-- Gym Check-in Node -->
+                            <div class="cozy-card rounded-3xl p-6 text-center relative overflow-hidden">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="font-serif font-bold text-lg text-[#4E342E]">Physical Grounding</h4>
+                                    <span id="gym-status-badge" class="px-2.5 py-0.5 text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-100 rounded-full">Incomplete</span>
+                                </div>
+                                <div class="p-6 rounded-2xl bg-[#FAF6F0]/60 flex flex-col items-center justify-center border border-[#8D6E63]/10">
+                                    <i id="gym-icon" class="fa-solid fa-spa text-4xl text-[#8D6E63]/40 mb-3 transition duration-300"></i>
+                                    <div class="text-sm font-semibold text-[#4E342E] mb-4">Logged a gym or physical session today?</div>
+                                    <button onclick="toggleGymCheckin()" id="gym-check-btn" class="w-full py-2 bg-white hover:bg-[#F5E6E8] text-[#8D6E63] hover:text-[#4E342E] border border-[#E8C5C8] rounded-xl font-semibold transition text-sm shadow-sm">
+                                        Log Physical Workout
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Wins Grid -->
+                            <div class="cozy-card rounded-3xl p-6">
+                                <h4 class="font-serif font-bold text-lg text-[#4E342E] mb-4 flex items-center justify-between">
+                                    <span>Mind Wins Today</span>
+                                    <i class="fa-solid fa-feather text-[#E8C5C8]"></i>
+                                </h4>
+                                <div class="flex items-center space-x-2 mb-3">
+                                    <input type="text" id="new-win" class="flex-1 bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#E8C5C8] text-[#4E342E] placeholder-[#8D6E63]/40" placeholder="Capture a small victory...">
+                                    <button onclick="addWin()" class="p-2 bg-[#F5E6E8] hover:bg-[#E8C5C8] text-[#4E342E] rounded-xl text-xs transition border border-[#E8C5C8]">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                </div>
+                                <ul id="wins-container" class="space-y-2 max-h-[160px] overflow-y-auto pr-2">
+                                    <!-- Dynamic content -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 2: COZY CALENDAR VIEW -->
+                <section id="tab-calendar-tab" class="space-y-6 hidden">
+                    <div class="cozy-card rounded-3xl p-6">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h3 class="font-serif font-bold text-2xl text-[#4E342E]">Interactive Cozy Calendar</h3>
+                                <p class="text-sm text-[#8D6E63] mt-1">Plan your mental loads and avoid corporate scheduling congestion.</p>
+                            </div>
+                            
+                            <!-- Toggle and Add Row -->
+                            <div class="flex items-center space-x-3">
+                                <div class="bg-white border border-[#E8C5C8] rounded-2xl p-1 flex shadow-sm">
+                                    <button onclick="toggleCalendarView('week')" id="view-week-btn" class="px-4 py-1.5 text-xs font-semibold rounded-xl transition-all duration-200 bg-[#E8C5C8] text-[#4E342E]">Weekly</button>
+                                    <button onclick="toggleCalendarView('month')" id="view-month-btn" class="px-4 py-1.5 text-xs font-semibold rounded-xl transition-all duration-200 text-[#8D6E63]">Monthly</button>
+                                </div>
+                                <button onclick="openAddEventModal()" class="px-4 py-2 bg-[#E8C5C8] hover:bg-[#8D6E63] text-[#4E342E] hover:text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center space-x-1.5 border border-[#E8C5C8]/30">
+                                    <i class="fa-solid fa-calendar-plus"></i>
+                                    <span>Schedule Node</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Calendar Container Grid -->
+                        <div id="calendar-grid-wrapper" class="bg-white border border-[#8D6E63]/10 rounded-2xl overflow-hidden shadow-sm">
+                            <!-- Week or Month view renders here -->
+                        </div>
+
+                        <!-- Calendar "Google Slander" Analysis Box -->
+                        <div class="mt-6 bg-[#FAF0E6] border border-[#E8C5C8] p-4 rounded-2xl flex items-start space-x-3 shadow-inner">
+                            <i class="fa-solid fa-mug-hot text-[#E8C5C8] text-lg mt-0.5 animate-bounce"></i>
+                            <div>
+                                <h5 class="text-xs font-bold text-[#8D6E63] uppercase tracking-widest">Google Slander Assessment</h5>
+                                <p class="text-sm text-[#4E342E] font-medium" id="slander-roast">"Analyzing your mental blocks... Add custom scheduled items to calibrate."</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 3: HABIT MATRIX -->
+                <section id="tab-habits" class="space-y-6 hidden">
+                    <div class="cozy-card rounded-3xl p-6">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h3 class="font-serif font-bold text-2xl text-[#4E342E]">Daily Habit Matrix</h3>
+                                <p class="text-sm text-[#8D6E63] mt-1">Consistency compounds gracefully. Fill out boxes to raise weekly completion strength.</p>
+                            </div>
+                            <div class="flex items-center space-x-3 bg-white border border-[#8D6E63]/10 p-2 rounded-2xl shadow-sm">
+                                <span class="text-xs text-[#8D6E63] px-2 font-mono">Create custom habit:</span>
+                                <input type="text" id="new-habit-name" class="bg-transparent text-xs text-[#4E342E] border-none focus:outline-none w-36 placeholder-[#8D6E63]/30 font-semibold" placeholder="Read 10 pages...">
+                                <button onclick="addCustomHabit()" class="bg-[#E8C5C8] hover:bg-[#8D6E63] text-[#4E342E] hover:text-white rounded-xl p-1.5 transition">
+                                    <i class="fa-solid fa-plus text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Habit Matrix Table -->
+                        <div class="overflow-x-auto rounded-2xl border border-[#8D6E63]/10 bg-white">
+                            <table class="w-full text-left min-w-[700px]">
+                                <thead>
+                                    <tr class="border-b border-[#8D6E63]/10 bg-[#FAF6F0]/40">
+                                        <th class="py-4 px-6 text-xs font-semibold text-[#8D6E63] tracking-wider w-[240px]">HABIT CELL</th>
+                                        <th class="py-4 text-xs font-semibold text-[#8D6E63] tracking-wider text-center">MON</th>
+                                        <th class="py-4 text-xs font-semibold text-[#8D6E63] tracking-wider text-center">TUE</th>
+                                        <th class="py-4 text-xs font-semibold text-[#8D6E63] tracking-wider text-center">WED</th>
+                                        <th class="py-4 text-xs font-semibold text-[#8D6E63] tracking-wider text-center">THU</th>
+                                        <th class="py-4 text-xs font-semibold text-[#8D6E63] tracking-wider text-center">FRI</th>
+                                        <th class="py-4 text-xs font-semibold text-[#8D6E63] tracking-wider text-center">SAT</th>
+                                        <th class="py-4 text-xs font-semibold text-[#8D6E63] tracking-wider text-center">SUN</th>
+                                        <th class="py-4 pr-6 text-xs font-semibold text-[#8D6E63] tracking-wider text-right w-[100px]">STRENGTH</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="habit-matrix-body" class="divide-y divide-[#8D6E63]/10">
+                                    <!-- Built dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 4: TIME HORIZONS -->
+                <section id="tab-horizons" class="space-y-6 hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Left View: Monthly Reflection Boards -->
+                        <div class="lg:col-span-2 cozy-card rounded-3xl p-6 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-serif font-bold text-xl text-[#4E342E] mb-2">Monthly Reflection Room</h4>
+                                <p class="text-xs text-[#8D6E63] mb-6">Contemplate friction points vs. clear milestones periodically.</p>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- What went well -->
+                                    <div class="space-y-3">
+                                        <div class="text-xs font-bold text-[#8D6E63] tracking-wider uppercase flex items-center space-x-1.5">
+                                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                            <span>Rose (Went Good)</span>
+                                        </div>
+                                        <div class="flex space-x-1.5">
+                                            <input type="text" id="well-input" class="flex-1 bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-1.5 text-xs text-[#4E342E] placeholder-[#8D6E63]/40 focus:outline-none" placeholder="Rose petal details...">
+                                            <button onclick="addReflection('well')" class="p-1.5 bg-[#FAF0E6] hover:bg-[#E8C5C8] border border-[#E8C5C8] rounded-xl text-xs"><i class="fa-solid fa-plus"></i></button>
+                                        </div>
+                                        <ul id="well-reflections" class="space-y-1.5 max-h-[160px] overflow-y-auto">
+                                            <!-- list -->
+                                        </ul>
+                                    </div>
+
+                                    <!-- What went bad -->
+                                    <div class="space-y-3">
+                                        <div class="text-xs font-bold text-[#8D6E63] tracking-wider uppercase flex items-center space-x-1.5">
+                                            <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                                            <span>Thorn (Went Bad)</span>
+                                        </div>
+                                        <div class="flex space-x-1.5">
+                                            <input type="text" id="bad-input" class="flex-1 bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-1.5 text-xs text-[#4E342E] placeholder-[#8D6E63]/40 focus:outline-none" placeholder="Thorn friction details...">
+                                            <button onclick="addReflection('bad')" class="p-1.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl text-xs"><i class="fa-solid fa-plus"></i></button>
+                                        </div>
+                                        <ul id="bad-reflections" class="space-y-1.5 max-h-[160px] overflow-y-auto">
+                                            <!-- list -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right View: Quick Future Vision Info -->
+                        <div class="cozy-card rounded-3xl p-6 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-serif font-bold text-lg text-[#4E342E] mb-2">My Ideal Horizon</h4>
+                                <p class="text-xs text-[#8D6E63] mb-4">Set up a vision statement for this block of time.</p>
+                                <textarea id="ideal-vision-statement" class="w-full bg-[#FAF6F0]/60 border border-[#8D6E63]/10 rounded-2xl p-4 text-sm text-[#4E342E] placeholder-[#8D6E63]/40 focus:outline-none focus:border-[#E8C5C8]" rows="4" placeholder="My current timeline is focused on finding absolute peace in creative projects..." onchange="saveVisionText()"></textarea>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-[#8D6E63]/10 flex items-center space-x-3 text-xs text-[#8D6E63]">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span>Reflect once every 30 days to reset alignment parameters.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Macro Targets Section -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Quarterly Targets -->
+                        <div class="cozy-card rounded-3xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-serif font-bold text-lg text-[#4E342E] flex items-center space-x-2">
+                                    <i class="fa-solid fa-diagram-project text-[#E8C5C8]"></i>
+                                    <span>Quarterly Targets (Q2)</span>
+                                </h4>
+                                <button onclick="addGoal('quarterly')" class="text-xs text-[#8D6E63] hover:underline"><i class="fa-solid fa-plus"></i> Target</button>
+                            </div>
+                            <div class="space-y-4" id="quarterly-goals-container">
+                                <!-- Goals rendered here -->
+                            </div>
+                        </div>
+
+                        <!-- Yearly Targets -->
+                        <div class="cozy-card rounded-3xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-serif font-bold text-lg text-[#4E342E] flex items-center space-x-2">
+                                    <i class="fa-solid fa-anchor text-[#E8C5C8]"></i>
+                                    <span>Yearly Target Alignment</span>
+                                </h4>
+                                <button onclick="addGoal('yearly')" class="text-xs text-[#8D6E63] hover:underline"><i class="fa-solid fa-plus"></i> Target</button>
+                            </div>
+                            <div class="space-y-4" id="yearly-goals-container">
+                                <!-- Goals rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 5: FINANCES & ASSETS -->
+                <section id="tab-finance" class="space-y-6 hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Financial Summary Cards -->
+                        <div class="cozy-card rounded-3xl p-6 space-y-6">
+                            <h4 class="font-serif font-bold text-xl text-[#4E342E]">Financial Cozy Book</h4>
+                            
+                            <div class="space-y-4">
+                                <!-- Monthly Income -->
+                                <div class="bg-white border border-[#8D6E63]/10 p-4 rounded-2xl flex items-center justify-between shadow-sm">
+                                    <div>
+                                        <div class="text-xs text-[#8D6E63] uppercase tracking-wider font-semibold">Incoming Flow</div>
+                                        <div class="text-xl font-bold font-display text-[#4E342E] mt-1" id="label-income">$0</div>
+                                    </div>
+                                    <button onclick="editFinanceField('income')" class="text-[#E8C5C8] hover:text-[#8D6E63] text-sm"><i class="fa-solid fa-pen-to-square"></i></button>
+                                </div>
+                                
+                                <!-- Monthly Expenses -->
+                                <div class="bg-white border border-[#8D6E63]/10 p-4 rounded-2xl flex items-center justify-between shadow-sm">
+                                    <div>
+                                        <div class="text-xs text-[#8D6E63] uppercase tracking-wider font-semibold">Outgoing Cost</div>
+                                        <div class="text-xl font-bold font-display text-rose-500 mt-1" id="label-expenses">$0</div>
+                                    </div>
+                                    <button onclick="editFinanceField('expenses')" class="text-[#E8C5C8] hover:text-[#8D6E63] text-sm"><i class="fa-solid fa-pen-to-square"></i></button>
+                                </div>
+
+                                <!-- Net Cash -->
+                                <div class="bg-[#FAF0E6] border border-[#E8C5C8] p-4 rounded-2xl flex items-center justify-between">
+                                    <div>
+                                        <div class="text-xs text-[#8D6E63] uppercase tracking-wider font-semibold">Monthly Net Surplus</div>
+                                        <div class="text-xl font-bold font-display text-emerald-600 mt-1" id="label-savings-flow">$0</div>
+                                    </div>
+                                    <i class="fa-solid fa-leaf text-[#E8C5C8] text-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Savings Pool Target -->
+                        <div class="lg:col-span-2 cozy-card rounded-3xl p-6 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-serif font-bold text-xl text-[#4E342E] mb-2">Savings Pool Target</h4>
+                                <p class="text-sm text-[#8D6E63] mb-6">Manage high-level assets, cushions, or specific aesthetic dreams.</p>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                                    <div class="space-y-4">
+                                        <div class="flex justify-between items-center text-sm">
+                                            <span class="text-[#8D6E63]">Current Balance</span>
+                                            <span class="text-[#4E342E] font-bold font-display text-base" id="label-current-savings">$0</span>
+                                        </div>
+                                        <div class="flex justify-between items-center text-sm">
+                                            <span class="text-[#8D6E63]">Savings Target</span>
+                                            <span class="text-[#4E342E] font-bold font-display text-base" id="label-target-savings">$0</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button onclick="editFinanceField('savingsPool')" class="w-full py-2 bg-white hover:bg-[#F5E6E8] border border-[#E8C5C8] text-[#8D6E63] rounded-xl text-xs font-semibold transition shadow-sm">
+                                                Update Balance
+                                            </button>
+                                            <button onclick="editFinanceField('targetSavings')" class="w-full py-2 bg-[#FAF0E6] hover:bg-[#E8C5C8] text-[#4E342E] rounded-xl text-xs font-semibold transition border border-[#E8C5C8] shadow-sm">
+                                                Update Goal
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Graphic Indicator -->
+                                    <div class="flex flex-col items-center justify-center p-4 bg-[#FAF6F0]/60 rounded-2xl border border-[#8D6E63]/10 relative">
+                                        <svg class="w-36 h-36 transform -rotate-90">
+                                            <circle cx="72" cy="72" r="58" stroke="currentColor" stroke-width="8" class="text-[#FAF0E6]" fill="transparent" />
+                                            <circle cx="72" cy="72" r="58" stroke="currentColor" stroke-width="8" class="text-[#E8C5C8]" stroke-dasharray="364.4" stroke-dashoffset="180" id="savings-progress-circle" fill="transparent" />
+                                        </svg>
+                                        <div class="absolute text-center">
+                                            <div class="text-xl font-bold font-display text-[#4E342E]" id="savings-progress-percent">0%</div>
+                                            <div class="text-[10px] text-[#8D6E63] uppercase tracking-widest font-semibold">Complete</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 6: BOOKS AND BUCKET LIST -->
+                <section id="tab-books" class="space-y-6 hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Reading Library -->
+                        <div class="cozy-card rounded-3xl p-6 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="font-serif font-bold text-xl text-[#4E342E] flex items-center space-x-2">
+                                        <i class="fa-solid fa-book-open-reader text-[#E8C5C8]"></i>
+                                        <span>Library Stack</span>
+                                    </h4>
+                                    <button onclick="addBook()" class="px-3 py-1 bg-[#FAF0E6] hover:bg-[#E8C5C8] border border-[#E8C5C8] text-[#4E342E] rounded-xl text-xs font-semibold transition shadow-sm">
+                                        Add Book
+                                    </button>
+                                </div>
+                                
+                                <div class="space-y-3 max-h-[400px] overflow-y-auto pr-2" id="books-container">
+                                    <!-- Dynamic Book elements -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bucket List -->
+                        <div class="cozy-card rounded-3xl p-6 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="font-serif font-bold text-xl text-[#4E342E] flex items-center space-x-2">
+                                        <i class="fa-solid fa-star text-[#E8C5C8]"></i>
+                                        <span>Cozy Bucket List</span>
+                                    </h4>
+                                    <button onclick="addBucketItem()" class="px-3 py-1 bg-[#FAF0E6] hover:bg-[#E8C5C8] border border-[#E8C5C8] text-[#4E342E] rounded-xl text-xs font-semibold transition shadow-sm">
+                                        Add Dream
+                                    </button>
+                                </div>
+                                
+                                <div class="space-y-2 max-h-[400px] overflow-y-auto pr-2" id="bucket-container">
+                                    <!-- Dynamic bucket list nodes -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MAIN CUSTOM NOTIFICATION WINDOW -->
+    <div id="checkin-notification" class="fixed bottom-6 right-6 max-w-sm w-full cozy-card border border-[#E8C5C8] p-5 rounded-2xl shadow-2xl transform translate-y-24 opacity-0 transition duration-300 pointer-events-none z-50">
+        <div class="flex items-start space-x-3">
+            <div id="notif-icon-box" class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-mug-hot text-[#4E342E]"></i>
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#8D6E63]" id="notif-sender">SYSTEM CALIBRATOR</span>
+                    <button onclick="dismissNotification()" class="text-[#8D6E63] hover:text-[#4E342E]"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <h5 class="text-sm font-semibold text-[#4E342E] mt-1" id="notif-title">Good Morning!</h5>
+                <p class="text-xs text-[#8D6E63] mt-1 leading-relaxed" id="notif-message">Check and update your priority nodes today.</p>
+                <div class="mt-3 flex justify-end">
+                    <button onclick="dismissNotification()" class="px-3 py-1.5 bg-[#E8C5C8] hover:bg-[#8D6E63] text-[#4E342E] hover:text-white rounded-lg text-xs font-semibold shadow-sm transition">Acknowledged</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUSTOM COZY MODAL DIALOGS -->
+    <div id="cozy-custom-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="cozy-card max-w-md w-full p-6 rounded-3xl m-4 shadow-2xl transform scale-95 transition-transform duration-300 relative">
+            <h4 class="font-serif font-bold text-xl text-[#4E342E]" id="modal-title">Create Schedule Node</h4>
+            <div class="mt-4" id="modal-body-content">
+                <!-- Injected forms -->
+            </div>
+            <div class="mt-6 flex justify-end space-x-2" id="modal-actions">
+                <!-- Custom interactive actions -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SYSTEM CORE JS -->
+    <script>
+        // Default Cozy state setup
+        const defaultState = {
+            syncUrl: "https://script.google.com/macros/s/AKfycbx08WsrMi4ZCGt584zKoVGC9hNk5tVdQTAaPyJtYSf4s9ZxrFiHMTM7C5027b8Dmh9P3w/exec", // Secure Google Apps Script Web App Endpoint for Cloud Sheets Syncing
+            focus: {
+                focus1: "Brew a warm cup of coffee",
+                focus2: "Refine dashboard vision frames",
+                focus3: "Stretch and go for a park walk"
+            },
+            visionStatement: "My mental focus is to create serene digital experiences, maintain light-hearted physical active habits, and prioritize cozy living environments.",
+            photos: [
+                { id: 1, url: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600&auto=format&fit=crop", caption: "Soft Light Reflection" },
+                { id: 2, url: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=600&auto=format&fit=crop", caption: "Clay Cup Cozy Vibe" },
+                { id: 3, url: "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=600&auto=format&fit=crop", caption: "Cottage Warm Sunshine" },
+                { id: 4, url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop", caption: "Clean Architectural Lines" }
+            ],
+            tasks: [
+                { id: 1, title: "Arrange Polaroid inspiration frames", completed: true },
+                { id: 2, title: "Configure week/month agenda grid", completed: false },
+                { id: 3, title: "Update savings pool indicator", completed: false }
+            ],
+            wins: [
+                "Kept consistent 10-minute quiet block on patio",
+                "Wrote down ideal workspace vision"
+            ],
+            gymChecked: false,
+            habits: [
+                { id: '1', name: "Aesthetic Walk or Run", log: [true, false, true, false, false, false, false] },
+                { id: '2', name: "Reading Cozy Material", log: [true, true, false, true, false, false, false] },
+                { id: '3', name: "Gratitude Log", log: [true, true, true, true, true, false, false] }
+            ],
+            calendarEvents: [
+                { id: 1, title: "Cozy Build & Design", date: "2026-05-18", time: "10:00", category: "Focus", load: "clean" },
+                { id: 2, title: "Superfluous Meeting Trap", date: "2026-05-19", time: "14:00", category: "Meeting", load: "high" },
+                { id: 3, title: "Sunset Mind Calibration", date: "2026-05-21", time: "18:30", category: "Personal", load: "medium" }
+            ],
+            reflections: {
+                well: [
+                    "Woke up at 7:00 AM with absolute ease",
+                    "Aesthetic clay mugs make the morning significantly brighter"
+                ],
+                bad: [
+                    "Allowed phone scroll to hijack 30-minute workspace block",
+                    "Skipped light stretching routine on Friday"
+                ]
+            },
+            goals: {
+                quarterly: [
+                    { id: 1, text: "Organize complete financial cozy record ledger", current: 70, target: 100 },
+                    { id: 2, text: "Complete $8,000 liquid emergency vault", current: 55, target: 100 }
+                ],
+                yearly: [
+                    { id: 1, text: "Read 30 books stack", current: 40, target: 100 },
+                    { id: 2, text: "Craft serene bedroom/study corner setup", current: 85, target: 100 }
+                ]
+            },
+            finances: {
+                income: 5400,
+                expenses: 3200,
+                savingsPool: 4950,
+                targetSavings: 10000
+            },
+            books: [
+                { id: 1, title: "A Room of One's Own", author: "Virginia Woolf", status: "Reading", progress: 65 },
+                { id: 2, title: "Atomic Habits", author: "James Clear", status: "Finished", progress: 100 },
+                { id: 3, title: "Designing Your Life", author: "Bill Burnett", status: "To Read", progress: 0 }
+            ],
+            bucketList: [
+                { id: 1, objective: "Backpack peaceful trails in Patagonia", category: "Adventure", achieved: false },
+                { id: 2, objective: "Assemble a premium clay mug shelf collection", category: "Aesthetic", achieved: true },
+                { id: 3, objective: "Build a mini greenhouse space", category: "Living", achieved: false }
+            ]
+        };
+
+        // Initialize State from LocalStorage securely
+        let localData = localStorage.getItem('myMindStateCozy');
+        let state;
+        try {
+            if (localData) {
+                let parsed = JSON.parse(localData);
+                // Deep merge state to prevent undefined keys resulting from schema updates
+                state = {
+                    ...defaultState,
+                    ...parsed,
+                    focus: { ...defaultState.focus, ...(parsed.focus || {}) },
+                    reflections: { ...defaultState.reflections, ...(parsed.reflections || {}) },
+                    goals: { ...defaultState.goals, ...(parsed.goals || {}) },
+                    finances: { ...defaultState.finances, ...(parsed.finances || {}) }
+                };
+                // Ensure array structures are fully initialized
+                if (!Array.isArray(state.photos)) state.photos = [...defaultState.photos];
+                if (!Array.isArray(state.tasks)) state.tasks = [...defaultState.tasks];
+                if (!Array.isArray(state.wins)) state.wins = [...defaultState.wins];
+                if (!Array.isArray(state.habits)) state.habits = [...defaultState.habits];
+                if (!Array.isArray(state.calendarEvents)) state.calendarEvents = [...defaultState.calendarEvents];
+                if (!Array.isArray(state.books)) state.books = [...defaultState.books];
+                if (!Array.isArray(state.bucketList)) state.bucketList = [...defaultState.bucketList];
+            } else {
+                state = JSON.parse(JSON.stringify(defaultState));
+            }
+        } catch(e) {
+            state = JSON.parse(JSON.stringify(defaultState));
+        }
+
+        let currentCalendarView = 'week'; // 'week' or 'month'
+        let currentCalendarPivotDate = new Date(); // Anchor for navigation
+        let isSyncing = false; // Prevents background request loops
+        let saveTimeout; // Debounce timer for saving state changes
+
+        async function saveToCloud() {
+            if (!state.syncUrl || isSyncing) return;
+            isSyncing = true;
+            updateSyncStatus('syncing');
+
+            try {
+                const response = await fetch(state.syncUrl, {
+                    method: 'POST',
+                    mode: 'cors',
+                    redirect: 'follow',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    },
+                    body: JSON.stringify(state)
+                });
+                const result = await response.json();
+                if (result && (result.result === 'success' || result.status === 'success')) {
+                    updateSyncStatus('synced');
+                } else {
+                    updateSyncStatus('error');
+                }
+            } catch (err) {
+                console.warn('Google Sheet Cloud Sync failed:', err);
+                updateSyncStatus('error');
+            } finally {
+                isSyncing = false;
+            }
+        }
+
+        async function loadFromCloud() {
+            if (!state.syncUrl) return;
+            updateSyncStatus('syncing');
+            try {
+                const response = await fetch(state.syncUrl, {
+                    method: 'GET',
+                    mode: 'cors',
+                    redirect: 'follow'
+                });
+                const cloudState = await response.json();
+                if (cloudState && typeof cloudState === 'object' && Object.keys(cloudState).length > 0) {
+                    const savedUrl = state.syncUrl; // Retain current endpoint config locally
+                    state = { ...defaultState, ...cloudState, syncUrl: savedUrl };
+                    localStorage.setItem('myMindStateCozy', JSON.stringify(state));
+                    renderAll();
+                    updateSyncStatus('synced');
+                    triggerSystemNotification("Cloud Sync Completed", "Loaded synchronized parameters from Google Sheet.");
+                } else {
+                    updateSyncStatus('empty');
+                }
+            } catch (err) {
+                console.warn('Google Sheet cloud load failed:', err);
+                updateSyncStatus('error');
+                triggerSystemNotification("Offline Mode Active", "Could not reach Google Sheets. Saving changes locally.", true);
+            }
+        }
+
+        function updateSyncStatus(status) {
+            const icon = document.getElementById('sync-icon-sidebar');
+            const text = document.getElementById('sync-status-text');
+            if (!icon || !text) return;
+
+            if (status === 'syncing') {
+                icon.className = 'fa-solid fa-rotate text-amber-500 animate-spin';
+                text.innerText = 'Syncing...';
+                text.className = 'text-xs text-amber-700 font-semibold';
+            } else if (status === 'synced') {
+                icon.className = 'fa-solid fa-cloud-arrow-down text-emerald-500';
+                text.innerText = 'Cloud Synced';
+                text.className = 'text-xs text-emerald-700 font-semibold';
+            } else if (status === 'error') {
+                icon.className = 'fa-solid fa-circle-exclamation text-rose-500';
+                text.innerText = 'Offline/Unsynced';
+                text.className = 'text-xs text-rose-600 font-semibold';
+            } else if (status === 'empty') {
+                icon.className = 'fa-solid fa-cloud text-[#8D6E63]';
+                text.innerText = 'Blank Sheet Ready';
+                text.className = 'text-xs text-[#8D6E63]';
+            } else {
+                icon.className = 'fa-solid fa-cloud text-[#8D6E63]';
+                text.innerText = 'Set Up Cloud Sync';
+                text.className = 'text-xs text-[#4E342E]';
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('myMindStateCozy', JSON.stringify(state));
+            renderAll();
+
+            // Debounce save events to Google Sheets API to optimize execution time
+            if (state.syncUrl) {
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(() => {
+                    saveToCloud();
+                }, 1500);
+            }
+        }
+
+        // NAVIGATION TRANSITIONS
+        function switchTab(tabId) {
+            document.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const targetBtn = document.getElementById(`btn-${tabId}`);
+            if (targetBtn) targetBtn.classList.add('active');
+
+            if (tabId === 'calendar-tab') {
+                renderCalendar();
+            }
+        }
+
+        // TIME AND DATE STRINGS SETUP
+        function setupDates() {
+            const date = new Date();
+            const days = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            document.getElementById('current-day-label').innerText = days[date.getDay()];
+            document.getElementById('current-date-label').innerText = `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+        }
+
+        // MASTER RENDERING ROUTINE
+        function renderAll() {
+            renderFocus();
+            renderVisionBoard();
+            renderTasks();
+            renderWins();
+            renderGym();
+            renderHabits();
+            renderReflections();
+            renderGoals();
+            renderFinances();
+            renderBooks();
+            renderBucketList();
+        }
+
+        // TOP FOCUS FIELD MANAGEMENT
+        function renderFocus() {
+            document.getElementById('focus1').value = state.focus.focus1 || '';
+            document.getElementById('focus2').value = state.focus.focus2 || '';
+            document.getElementById('focus3').value = state.focus.focus3 || '';
+            document.getElementById('ideal-vision-statement').value = state.visionStatement || '';
+        }
+
+        function updateFocus(key) {
+            state.focus[key] = document.getElementById(key).value;
+            saveState();
+        }
+
+        function saveVisionText() {
+            state.visionStatement = document.getElementById('ideal-vision-statement').value;
+            saveState();
+        }
+
+        // Helper function to scale and compress massive image files
+        function compressImage(base64Str, maxWidth, maxHeight, callback) {
+            const img = new Image();
+            img.src = base64Str;
+            img.onload = function() {
+                let width = img.width;
+                let height = img.height;
+                if (width > maxWidth || height > maxHeight) {
+                    if (width > height) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    } else {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                // Compress to JPEG with 0.6 quality to fit safely in Google Sheets
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                callback(compressedDataUrl);
+            };
+            img.onerror = function() {
+                callback(base64Str); // Fallback to raw if load fails
+            };
+        }
+
+        // POLAROID GALLERY AND UPLOADER SYSTEM
+        function renderVisionBoard() {
+            const container = document.getElementById('vision-board-container');
+            container.innerHTML = '';
+
+            state.photos.forEach((photo) => {
+                const polaroid = document.createElement('div');
+                polaroid.className = 'polaroid-frame bg-[#FCFBF9] p-3 rounded-md border border-[#8D6E63]/10 relative group';
+                polaroid.innerHTML = `
+                    <div class="aspect-square w-full rounded-sm overflow-hidden bg-[#FAF6F0] border border-[#8D6E63]/5 relative">
+                        <img src="${photo.url}" alt="${photo.caption}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400/F5E6E8/4E342E?text=Aesthetic+Focus'">
+                    </div>
+                    <div class="mt-3 text-center">
+                        <p class="font-serif italic text-xs text-[#4E342E] truncate font-semibold">${photo.caption || 'Cozy Inspiration'}</p>
+                    </div>
+                    <!-- Quick Actions -->
+                    <button onclick="deletePolaroid(${photo.id})" class="absolute top-4 right-4 bg-white/80 hover:bg-white text-rose-600 rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200 shadow-md">
+                        <i class="fa-solid fa-trash-can text-[10px]"></i>
+                    </button>
+                `;
+                container.appendChild(polaroid);
+            });
+        }
+
+        function triggerPhotoUpload() {
+            openModal('Add Aesthetic Inspiration Photo', `
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Inspiration Caption</label>
+                        <input type="text" id="modal-photo-caption" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" placeholder="e.g., Cozy Morning Sunshine">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Option A: Paste Image URL (Secure HTTPS only)</label>
+                        <input type="text" id="modal-photo-url" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" placeholder="https://images.unsplash.com/...">
+                    </div>
+                    <div class="text-center py-2 text-xs font-bold text-[#8D6E63]">— OR —</div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Option B: Upload Local File (Auto-Compressed)</label>
+                        <button onclick="document.getElementById('vision-photo-uploader').click(); closeModal();" class="w-full py-2.5 bg-[#FAF0E6] hover:bg-[#E8C5C8] border border-[#E8C5C8] text-[#4E342E] font-semibold rounded-xl text-xs transition">
+                            <i class="fa-solid fa-file-image mr-1"></i> Choose Image File
+                        </button>
+                    </div>
+                </div>
+            `, `
+                <button onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-[#8D6E63] hover:text-[#4E342E]">Cancel</button>
+                <button onclick="savePhotoFromURL()" class="px-4 py-2 text-xs font-semibold bg-[#E8C5C8] text-[#4E342E] rounded-xl shadow-sm hover:bg-[#8D6E63] hover:text-white transition">Embed Image</button>
+            `);
+        }
+
+        function savePhotoFromURL() {
+            const urlInput = document.getElementById('modal-photo-url');
+            const captionInput = document.getElementById('modal-photo-caption');
+            let url = urlInput.value.trim();
+            const caption = captionInput.value.trim();
+
+            if (!url) return;
+
+            // Enforce HTTPS security filter to prevent page mixed content breakage
+            if (url.startsWith('http://')) {
+                url = url.replace('http://', 'https://');
+            } else if (!url.startsWith('https://') && !url.startsWith('data:')) {
+                triggerSystemNotification("Insecure Link Blocked", "Please use a secure HTTPS link to prevent loading blocks.", true);
+                return;
+            }
+
+            state.photos.push({
+                id: Date.now(),
+                url: url,
+                caption: caption || "Inspiration Vibe"
+            });
+            closeModal();
+            saveState();
+        }
+
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Compress incoming large image before appending to state
+                compressImage(e.target.result, 450, 450, function(compressedUrl) {
+                    state.photos.push({
+                        id: Date.now(),
+                        url: compressedUrl,
+                        caption: file.name.split('.')[0] || "My Photo"
+                    });
+                    saveState();
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function deletePolaroid(id) {
+            state.photos = state.photos.filter(p => p.id !== id);
+            saveState();
+        }
+
+        // ACTIVE ACTIONS / TASKS LOGIC
+        function renderTasks() {
+            const container = document.getElementById('tasks-list-container');
+            container.innerHTML = '';
+            
+            let completedCount = 0;
+            state.tasks.forEach(task => {
+                if (task.completed) completedCount++;
+                const taskDiv = document.createElement('div');
+                taskDiv.className = `flex items-center justify-between p-3 rounded-2xl border ${task.completed ? 'bg-[#FAF0E6]/30 border-[#E8C5C8]/40 text-[#8D6E63]/70' : 'bg-white border-[#8D6E63]/10 text-[#4E342E]'} transition-all duration-200 shadow-sm`;
+                taskDiv.innerHTML = `
+                    <div class="flex items-center space-x-3 flex-1 min-w-0">
+                        <button onclick="toggleTask(${task.id})" class="w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition ${task.completed ? 'bg-[#E8C5C8] border-[#E8C5C8] text-[#4E342E]' : 'border-[#8D6E63]/30 hover:border-[#E8C5C8] bg-transparent'}">
+                            ${task.completed ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
+                        </button>
+                        <span class="text-sm font-medium truncate ${task.completed ? 'line-through' : ''}">${task.title}</span>
+                    </div>
+                    <button onclick="deleteTask(${task.id})" class="text-[#8D6E63]/40 hover:text-red-500 transition p-1 shrink-0"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                `;
+                container.appendChild(taskDiv);
+            });
+
+            document.getElementById('task-ratio').innerText = `${completedCount}/${state.tasks.length} Completed`;
+        }
+
+        function addTask() {
+            const input = document.getElementById('new-task-title');
+            const title = input.value.trim();
+            if (!title) return;
+            state.tasks.push({
+                id: Date.now(),
+                title: title,
+                completed: false
+            });
+            input.value = '';
+            saveState();
+        }
+
+        function toggleTask(id) {
+            const task = state.tasks.find(t => t.id === id);
+            if (task) task.completed = !task.completed;
+            saveState();
+        }
+
+        function deleteTask(id) {
+            state.tasks = state.tasks.filter(t => t.id !== id);
+            saveState();
+        }
+
+        // PHYSICAL GYM SESSIONS LOGIC
+        function renderGym() {
+            const isChecked = state.gymChecked;
+            const badge = document.getElementById('gym-status-badge');
+            const icon = document.getElementById('gym-icon');
+            const btn = document.getElementById('gym-check-btn');
+
+            if (isChecked) {
+                badge.innerText = 'Serene';
+                badge.className = "px-2.5 py-0.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full";
+                icon.className = "fa-solid fa-spa text-4xl text-emerald-500 mb-3 transform scale-110";
+                btn.innerText = 'Remove Grounding Log';
+                btn.className = 'w-full py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 rounded-xl font-semibold transition text-sm';
+            } else {
+                badge.innerText = 'Rest Day';
+                badge.className = "px-2.5 py-0.5 text-xs font-semibold text-[#8D6E63] bg-[#FAF0E6] border border-[#E8C5C8]/30 rounded-full";
+                icon.className = "fa-solid fa-spa text-4xl text-[#8D6E63]/40 mb-3";
+                btn.innerText = 'Log Physical Grounding';
+                btn.className = 'w-full py-2 bg-white hover:bg-[#F5E6E8] text-[#8D6E63] hover:text-[#4E342E] border border-[#E8C5C8] rounded-xl font-semibold transition text-sm shadow-sm';
+            }
+        }
+
+        function toggleGymCheckin() {
+            state.gymChecked = !state.gymChecked;
+            saveState();
+        }
+
+        // CORE MIND WINS TRACKER
+        function renderWins() {
+            const container = document.getElementById('wins-container');
+            container.innerHTML = '';
+            state.wins.forEach((win, index) => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start space-x-2 text-xs text-[#8D6E63] bg-[#FAF6F0]/80 border border-[#8D6E63]/5 p-2.5 rounded-xl shadow-sm';
+                li.innerHTML = `
+                    <i class="fa-solid fa-leaf text-[#E8C5C8] mt-0.5 shrink-0"></i>
+                    <span class="flex-1">${win}</span>
+                    <button onclick="deleteWin(${index})" class="text-[#8D6E63]/30 hover:text-red-500 transition shrink-0"><i class="fa-solid fa-xmark"></i></button>
+                `;
+                container.appendChild(li);
+            });
+        }
+
+        function addWin() {
+            const input = document.getElementById('new-win');
+            const win = input.value.trim();
+            if (!win) return;
+            state.wins.push(win);
+            input.value = '';
+            saveState();
+        }
+
+        function deleteWin(index) {
+            state.wins.splice(index, 1);
+            saveState();
+        }
+
+        // DETAILED COZY CALENDAR GENERATOR
+        function toggleCalendarView(view) {
+            currentCalendarView = view;
+            
+            // Adjust buttons active styling
+            const weekBtn = document.getElementById('view-week-btn');
+            const monthBtn = document.getElementById('view-month-btn');
+
+            if (view === 'week') {
+                weekBtn.className = "px-4 py-1.5 text-xs font-semibold rounded-xl transition-all duration-200 bg-[#E8C5C8] text-[#4E342E]";
+                monthBtn.className = "px-4 py-1.5 text-xs font-semibold rounded-xl transition-all duration-200 text-[#8D6E63]";
+            } else {
+                monthBtn.className = "px-4 py-1.5 text-xs font-semibold rounded-xl transition-all duration-200 bg-[#E8C5C8] text-[#4E342E]";
+                weekBtn.className = "px-4 py-1.5 text-xs font-semibold rounded-xl transition-all duration-200 text-[#8D6E63]";
+            }
+
+            renderCalendar();
+        }
+
+        function getStartOfWeek(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+            return new Date(d.setDate(diff));
+        }
+
+        function formatLocalDate(d) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function renderCalendar() {
+            const container = document.getElementById('calendar-grid-wrapper');
+            container.innerHTML = '';
+
+            if (currentCalendarView === 'week') {
+                renderWeeklyGrid(container);
+            } else {
+                renderMonthlyGrid(container);
+            }
+
+            analyzeCalendarSlander();
+        }
+
+        function renderWeeklyGrid(container) {
+            const startOfWeek = getStartOfWeek(currentCalendarPivotDate);
+            const daysOfWeek = [];
+            
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(startOfWeek);
+                day.setDate(startOfWeek.getDate() + i);
+                daysOfWeek.push(day);
+            }
+
+            let html = `
+                <div class="grid grid-cols-7 border-b border-[#8D6E63]/10 bg-[#FAF6F0]/60 p-3 text-center text-xs font-bold text-[#8D6E63]">
+                    <div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div><div>SUN</div>
+                </div>
+                <div class="grid grid-cols-7 divide-x divide-[#8D6E63]/10 h-[280px] bg-white">
+            `;
+
+            daysOfWeek.forEach((day) => {
+                const formatted = formatLocalDate(day);
+                const daysEvents = state.calendarEvents.filter(e => e.date === formatted);
+                const isToday = formatLocalDate(new Date()) === formatted;
+
+                html += `
+                    <div class="p-2 space-y-1.5 flex flex-col justify-start relative overflow-y-auto ${isToday ? 'bg-[#F5E6E8]/20' : ''}">
+                        <div class="text-xs font-bold ${isToday ? 'text-[#E8C5C8] font-mono' : 'text-[#8D6E63]'} mb-1 flex items-center justify-between">
+                            <span>${day.getDate()}</span>
+                            ${isToday ? '<span class="w-1.5 h-1.5 rounded-full bg-[#E8C5C8]"></span>' : ''}
+                        </div>
+                        <div class="space-y-1 flex-1">
+                `;
+
+                daysEvents.forEach(evt => {
+                    let pillColor = "bg-[#FAF0E6] text-[#4E342E] border-[#E8C5C8]";
+                    if (evt.load === "high") pillColor = "bg-rose-50 text-rose-800 border-rose-200";
+                    if (evt.load === "clean") pillColor = "bg-[#FAF6F0] text-[#8D6E63] border-stone-200";
+
+                    html += `
+                        <div class="text-[10px] p-1.5 rounded-lg border ${pillColor} shadow-sm group relative">
+                            <div class="font-bold truncate">${evt.title}</div>
+                            <div class="text-[8px] opacity-70 mt-0.5">${evt.time}</div>
+                            <button onclick="deleteCalendarEvent(${evt.id})" class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition text-rose-600 font-bold bg-white/70 rounded-full w-4 h-4 flex items-center justify-center">
+                                ×
+                            </button>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function renderMonthlyGrid(container) {
+            const year = currentCalendarPivotDate.getFullYear();
+            const month = currentCalendarPivotDate.getMonth();
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const lastDate = new Date(year, month + 1, 0).getDate();
+            
+            const startOffset = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+
+            let html = `
+                <div class="grid grid-cols-7 border-b border-[#8D6E63]/10 bg-[#FAF6F0]/60 p-3 text-center text-xs font-bold text-[#8D6E63]">
+                    <div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div><div>SUN</div>
+                </div>
+                <div class="grid grid-cols-7 grid-rows-5 divide-x divide-y divide-[#8D6E63]/10 bg-white min-h-[300px]">
+            `;
+
+            for (let i = 0; i < startOffset; i++) {
+                html += `<div class="p-2 bg-[#FAF6F0]/10 text-stone-300"></div>`;
+            }
+
+            for (let day = 1; day <= lastDate; day++) {
+                const currentDate = new Date(year, month, day);
+                const formatted = formatLocalDate(currentDate);
+                const daysEvents = state.calendarEvents.filter(e => e.date === formatted);
+                const isToday = formatLocalDate(new Date()) === formatted;
+
+                html += `
+                    <div class="p-1.5 space-y-1 min-h-[60px] relative overflow-y-auto ${isToday ? 'bg-[#F5E6E8]/20' : ''}">
+                        <div class="text-[10px] font-bold ${isToday ? 'text-[#E8C5C8]' : 'text-[#8D6E63]'} mb-1 flex items-center justify-between">
+                            <span>${day}</span>
+                        </div>
+                        <div class="space-y-0.5">
+                `;
+
+                daysEvents.forEach(evt => {
+                    let pillColor = "bg-[#FAF0E6] text-[#4E342E] border-[#E8C5C8]";
+                    if (evt.load === "high") pillColor = "bg-rose-50 text-rose-800 border-rose-200";
+
+                    html += `
+                        <div class="text-[8px] p-0.5 px-1 rounded border ${pillColor} truncate group relative">
+                            <span>${evt.title}</span>
+                            <button onclick="deleteCalendarEvent(${evt.id})" class="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition text-rose-600 font-bold bg-white/70 w-3 h-3 flex items-center justify-center">
+                                ×
+                            </button>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            const totalSlots = startOffset + lastDate;
+            const remaining = totalSlots % 7 === 0 ? 0 : 7 - (totalSlots % 7);
+            for (let i = 0; i < remaining; i++) {
+                html += `<div class="p-2 bg-[#FAF6F0]/10 text-stone-300"></div>`;
+            }
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // CALENDAR MODAL ACTION HANDLERS
+        function openAddEventModal() {
+            openModal('Schedule New Mental Block', `
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Target Date</label>
+                        <input type="date" id="modal-event-date" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" value="${formatLocalDate(new Date())}">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Session Description / Node Name</label>
+                        <input type="text" id="modal-event-title" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" placeholder="e.g., Deep Serene Writing">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Session Time</label>
+                            <input type="time" id="modal-event-time" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" value="10:00">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Aesthetic Category</label>
+                            <select id="modal-event-cat" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]">
+                                <option value="Focus">Creative Focus</option>
+                                <option value="Meeting">Meeting / Sync</option>
+                                <option value="Personal">Personal Space</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Burnout Load Level</label>
+                        <select id="modal-event-load" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]">
+                            <option value="clean">Clean Serene (Low Load)</option>
+                            <option value="medium">Medium Alignment</option>
+                            <option value="high">High Stress / Fast Pace</option>
+                        </select>
+                    </div>
+                </div>
+            `, `
+                <button onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-[#8D6E63] hover:text-[#4E342E]">Close</button>
+                <button onclick="submitNewCalendarEvent()" class="px-4 py-2 text-xs font-semibold bg-[#E8C5C8] text-[#4E342E] rounded-xl shadow-sm hover:bg-[#8D6E63] hover:text-white transition">Schedule Node</button>
+            `);
+        }
+
+        function submitNewCalendarEvent() {
+            const date = document.getElementById('modal-event-date').value;
+            const title = document.getElementById('modal-event-title').value.trim();
+            const time = document.getElementById('modal-event-time').value;
+            const category = document.getElementById('modal-event-cat').value;
+            const load = document.getElementById('modal-event-load').value;
+
+            if (!title) return;
+
+            state.calendarEvents.push({
+                id: Date.now(),
+                title,
+                date,
+                time,
+                category,
+                load
+            });
+            
+            closeModal();
+            saveState();
+        }
+
+        function deleteCalendarEvent(id) {
+            state.calendarEvents = state.calendarEvents.filter(e => e.id !== id);
+            saveState();
+        }
+
+        // COALESCING BURN-OUT METRIC & COZY SLANDER
+        function analyzeCalendarSlander() {
+            const highLoadCount = state.calendarEvents.filter(e => e.load === 'high').length;
+            const total = state.calendarEvents.length;
+            const roastEl = document.getElementById('slander-roast');
+
+            let roast = "";
+            if (total === 0) {
+                roast = "Your calendar is completely empty. Are you actually running an empire or just staring beautifully out of rain-soaked cottage windows?";
+            } else if (highLoadCount >= 3 || total >= 6) {
+                roast = "Burnout alarm! Your calendar schedule looks like a consulting slides corporate trap. Break those meetings up before you turn into a drone.";
+            } else if (total > 3) {
+                roast = "Good productivity flow, but you have some filler meetings creeping in. Set up blockages to guard your creative focus slots.";
+            } else {
+                roast = "Perfect concentration block load. Mostly self-guided building with zero fluff meetings. High tier mind space.";
+            }
+
+            if (roastEl) roastEl.innerText = roast;
+        }
+
+        // HABIT MATRIX CORE LOGIC
+        function renderHabits() {
+            const tbody = document.getElementById('habit-matrix-body');
+            tbody.innerHTML = '';
+
+            state.habits.forEach(habit => {
+                const totalCompleted = habit.log.filter(Boolean).length;
+                const strength = Math.round((totalCompleted / 7) * 100);
+                
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-[#FAF6F0]/30 transition-all';
+                
+                let dayCheckboxes = '';
+                habit.log.forEach((checked, dayIndex) => {
+                    dayCheckboxes += `
+                        <td class="py-4 text-center">
+                            <button onclick="toggleHabitDay('${habit.id}', ${dayIndex})" class="w-6 h-6 mx-auto rounded-lg border flex items-center justify-center transition-all ${checked ? 'bg-[#E8C5C8] border-[#E8C5C8] text-[#4E342E]' : 'border-[#8D6E63]/10 hover:border-[#E8C5C8] bg-transparent'}" style="margin-left: auto; margin-right: auto;">
+                                ${checked ? '<i class="fa-solid fa-heart text-[8px]"></i>' : ''}
+                            </button>
+                        </td>
+                    `;
+                });
+
+                tr.innerHTML = `
+                    <td class="py-4 px-6 font-medium text-sm text-[#4E342E] flex items-center justify-between pr-4 w-[240px] group">
+                        <span class="truncate font-semibold">${habit.name}</span>
+                        <button onclick="deleteHabit('${habit.id}')" class="text-[#8D6E63]/30 hover:text-red-500 transition opacity-0 group-hover:opacity-100 focus:opacity-100"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </td>
+                    ${dayCheckboxes}
+                    <td class="py-4 pr-6 text-right font-mono font-bold text-sm text-[#8D6E63] w-[100px]">
+                        ${strength}%
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleHabitDay(habitId, dayIndex) {
+            const habit = state.habits.find(h => h.id === habitId);
+            if (habit) {
+                habit.log[dayIndex] = !habit.log[dayIndex];
+                saveState();
+            }
+        }
+
+        function addCustomHabit() {
+            const input = document.getElementById('new-habit-name');
+            const name = input.value.trim();
+            if (!name) return;
+            state.habits.push({
+                id: Date.now().toString(),
+                name: name,
+                log: [false, false, false, false, false, false, false]
+            });
+            input.value = '';
+            saveState();
+        }
+
+        function deleteHabit(id) {
+            state.habits = state.habits.filter(h => h.id !== id);
+            saveState();
+        }
+
+        // MONTHLY REFLECTIONS BOARD
+        function renderReflections() {
+            const wellContainer = document.getElementById('well-reflections');
+            const badContainer = document.getElementById('bad-reflections');
+
+            wellContainer.innerHTML = '';
+            badContainer.innerHTML = '';
+
+            state.reflections.well.forEach((item, idx) => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start justify-between text-xs p-2.5 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-800 shadow-sm';
+                li.innerHTML = `
+                    <span>${item}</span>
+                    <button onclick="deleteReflection('well', ${idx})" class="text-emerald-400 hover:text-red-500 transition ml-2 shrink-0"><i class="fa-solid fa-xmark"></i></button>
+                `;
+                wellContainer.appendChild(li);
+            });
+
+            state.reflections.bad.forEach((item, idx) => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start justify-between text-xs p-2.5 bg-rose-50 border border-rose-100 rounded-xl text-rose-800 shadow-sm';
+                li.innerHTML = `
+                    <span>${item}</span>
+                    <button onclick="deleteReflection('bad', ${idx})" class="text-rose-400 hover:text-red-500 transition ml-2 shrink-0"><i class="fa-solid fa-xmark"></i></button>
+                `;
+                badContainer.appendChild(li);
+            });
+        }
+
+        function addReflection(type) {
+            const input = document.getElementById(`${type}-input`);
+            const val = input.value.trim();
+            if (!val) return;
+            state.reflections[type].push(val);
+            input.value = '';
+            saveState();
+        }
+
+        function deleteReflection(type, idx) {
+            state.reflections[type].splice(idx, 1);
+            saveState();
+        }
+
+        // STRATEGIC FOCUS HORIZON GOALS
+        function renderGoals() {
+            const renderHorizonGoals = (type, containerId) => {
+                const container = document.getElementById(containerId);
+                container.innerHTML = '';
+                
+                state.goals[type].forEach(goal => {
+                    const div = document.createElement('div');
+                    div.className = 'space-y-2';
+                    div.innerHTML = `
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-[#4E342E] font-semibold truncate max-w-[260px]">${goal.text}</span>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-[#8D6E63] font-bold font-mono text-xs">${goal.current}%</span>
+                                <button onclick="adjustGoalProgress(${goal.id}, '${type}')" class="text-[#8D6E63]/50 hover:text-[#4E342E] transition"><i class="fa-solid fa-square-plus"></i></button>
+                                <button onclick="deleteGoal(${goal.id}, '${type}')" class="text-[#8D6E63]/30 hover:text-red-500 transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                            </div>
+                        </div>
+                        <div class="w-full bg-[#FAF0E6] rounded-full h-2 overflow-hidden border border-[#8D6E63]/10">
+                            <div class="bg-gradient-to-r from-[#E8C5C8] to-[#8D6E63] h-2 rounded-full transition-all duration-300" style="width: ${goal.current}%"></div>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            };
+
+            renderHorizonGoals('quarterly', 'quarterly-goals-container');
+            renderHorizonGoals('yearly', 'yearly-goals-container');
+        }
+
+        function addGoal(type) {
+            openModal(`Add ${type} Target Node`, `
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Target Statement</label>
+                        <input type="text" id="modal-goal-text" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" placeholder="e.g., Build greenhouse patio layout">
+                    </div>
+                </div>
+            `, `
+                <button onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-[#8D6E63] hover:text-[#4E342E]">Cancel</button>
+                <button onclick="submitNewGoal('${type}')" class="px-4 py-2 text-xs font-semibold bg-[#E8C5C8] text-[#4E342E] rounded-xl shadow-sm hover:bg-[#8D6E63] hover:text-white transition">Create Target</button>
+            `);
+        }
+
+        function submitNewGoal(type) {
+            const text = document.getElementById('modal-goal-text').value.trim();
+            if (!text) return;
+
+            state.goals[type].push({
+                id: Date.now(),
+                text: text,
+                current: 0,
+                target: 100
+            });
+            closeModal();
+            saveState();
+        }
+
+        function adjustGoalProgress(id, type) {
+            const goal = state.goals[type].find(g => g.id === id);
+            if (!goal) return;
+
+            openModal('Calibrate Progress Strength', `
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Completion Percentage (0 - 100)</label>
+                        <input type="number" id="modal-goal-progress" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" value="${goal.current}" min="0" max="100">
+                    </div>
+                </div>
+            `, `
+                <button onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-[#8D6E63] hover:text-[#4E342E]">Cancel</button>
+                <button onclick="submitGoalProgress(${id}, '${type}')" class="px-4 py-2 text-xs font-semibold bg-[#E8C5C8] text-[#4E342E] rounded-xl shadow-sm hover:bg-[#8D6E63] hover:text-white transition">Update Percentage</button>
+            `);
+        }
+
+        function submitGoalProgress(id, type) {
+            const val = parseInt(document.getElementById('modal-goal-progress').value, 10);
+            if (isNaN(val) || val < 0 || val > 100) return;
+
+            const goal = state.goals[type].find(g => g.id === id);
+            if (goal) {
+                goal.current = val;
+                closeModal();
+                saveState();
+            }
+        }
+
+        function deleteGoal(id, type) {
+            state.goals[type] = state.goals[type].filter(g => g.id !== id);
+            saveState();
+        }
+
+        // FINANCIAL ASSET CALCULATIONS
+        function renderFinances() {
+            const formatCurr = (v) => '$' + Number(v || 0).toLocaleString();
+            
+            document.getElementById('label-income').innerText = formatCurr(state.finances.income);
+            document.getElementById('label-expenses').innerText = formatCurr(state.finances.expenses);
+            
+            const netFlow = state.finances.income - state.finances.expenses;
+            const flowEl = document.getElementById('label-savings-flow');
+            flowEl.innerText = formatCurr(netFlow);
+            if (netFlow >= 0) {
+                flowEl.className = "text-xl font-bold font-display text-emerald-600 mt-1";
+            } else {
+                flowEl.className = "text-xl font-bold font-display text-rose-500 mt-1";
+            }
+
+            document.getElementById('label-current-savings').innerText = formatCurr(state.finances.savingsPool);
+            document.getElementById('label-target-savings').innerText = formatCurr(state.finances.targetSavings);
+
+            const percent = state.finances.targetSavings > 0 
+                ? Math.round((state.finances.savingsPool / state.finances.targetSavings) * 100)
+                : 0;
+            
+            document.getElementById('savings-progress-percent').innerText = `${percent}%`;
+
+            const circle = document.getElementById('savings-progress-circle');
+            const circumference = 364.4;
+            const capPercent = Math.min(100, Math.max(0, percent));
+            const offset = circumference - (capPercent / 100) * circumference;
+            circle.setAttribute('stroke-dashoffset', offset);
+        }
+
+        function editFinanceField(field) {
+            let label = "value";
+            if (field === 'income') label = "Monthly Total Income";
+            if (field === 'expenses') label = "Monthly Fixed Expenses";
+            if (field === 'savingsPool') label = "Emergency Cushion Current Asset Balance";
+            if (field === 'targetSavings') label = "Asset Protection Target Goal";
+
+            openModal(`Edit ${label}`, `
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Enter Currency Amount ($)</label>
+                        <input type="number" id="modal-finance-val" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" value="${state.finances[field]}">
+                    </div>
+                </div>
+            `, `
+                <button onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-[#8D6E63] hover:text-[#4E342E]">Cancel</button>
+                <button onclick="submitFinanceField('${field}')" class="px-4 py-2 text-xs font-semibold bg-[#E8C5C8] text-[#4E342E] rounded-xl shadow-sm hover:bg-[#8D6E63] hover:text-white transition">Update Ledger</button>
+            `);
+        }
+
+        function submitFinanceField(field) {
+            const val = parseInt(document.getElementById('modal-finance-val').value, 10);
+            if (isNaN(val)) return;
+
+            state.finances[field] = val;
+            closeModal();
+            saveState();
+        }
+
+        // READING LIBRARY MATRIX
+        function renderBooks() {
+            const container = document.getElementById('books-container');
+            container.innerHTML = '';
+
+            state.books.forEach(bk => {
+                let badgeColor = "bg-[#FAF0E6] text-[#4E342E] border-[#E8C5C8]";
+                if (bk.status === 'Finished') badgeColor = "bg-emerald-50 text-emerald-800 border-emerald-100";
+                if (bk.status === 'To Read') badgeColor = "bg-stone-50 text-stone-400 border-stone-200";
+
+                const bkDiv = document.createElement('div');
+                bkDiv.className = 'p-3.5 bg-[#FCFBF9] border border-[#8D6E63]/10 rounded-2xl space-y-2 shadow-sm';
+                bkDiv.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <div class="text-sm font-semibold text-[#4E342E] truncate max-w-[200px]">${bk.title}</div>
+                            <div class="text-xs text-[#8D6E63]">${bk.author}</div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span onclick="cycleBookStatus(${bk.id})" class="cursor-pointer px-2 py-0.5 text-[10px] font-bold rounded-lg border ${badgeColor}">${bk.status}</span>
+                            <button onclick="deleteBook(${bk.id})" class="text-[#8D6E63]/40 hover:text-red-500 transition"><i class="fa-solid fa-trash text-xs"></i></button>
+                        </div>
+                    </div>
+                    ${bk.status === 'Reading' ? `
+                    <div class="flex items-center space-x-2 pt-1">
+                        <div class="flex-1 bg-[#FAF6F0] h-1.5 rounded-full overflow-hidden border border-[#8D6E63]/5">
+                            <div class="bg-gradient-to-r from-[#E8C5C8] to-[#8D6E63] h-1.5 rounded-full" style="width: ${bk.progress}%"></div>
+                        </div>
+                        <span onclick="adjustBookProgress(${bk.id})" class="cursor-pointer text-[10px] font-mono font-bold text-[#8D6E63]">${bk.progress}%</span>
+                    </div>
+                    ` : ''}
+                `;
+                container.appendChild(bkDiv);
+            });
+        }
+
+        function addBook() {
+            openModal('Add Stack Book Item', `
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Book Title</label>
+                        <input type="text" id="modal-book-title" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" placeholder="e.g., A Room of One's Own">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Author</label>
+                        <input type="text" id="modal-book-author" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" placeholder="e.g., Virginia Woolf">
+                    </div>
+                </div>
+            `, `
+                <button onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-[#8D6E63] hover:text-[#4E342E]">Cancel</button>
+                <button onclick="submitNewBookItem()" class="px-4 py-2 text-xs font-semibold bg-[#E8C5C8] text-[#4E342E] rounded-xl shadow-sm hover:bg-[#8D6E63] hover:text-white transition">Place Book</button>
+            `);
+        }
+
+        function submitNewBookItem() {
+            const title = document.getElementById('modal-book-title').value.trim();
+            const author = document.getElementById('modal-book-author').value.trim();
+
+            if (!title) return;
+
+            state.books.push({
+                id: Date.now(),
+                title: title,
+                author: author || "Unknown Author",
+                status: "To Read",
+                progress: 0
+            });
+            closeModal();
+            saveState();
+        }
+
+        function cycleBookStatus(id) {
+            const bk = state.books.find(b => b.id === id);
+            if (bk) {
+                if (bk.status === 'To Read') {
+                    bk.status = 'Reading';
+                    bk.progress = 10;
+                } else if (bk.status === 'Reading') {
+                    bk.status = 'Finished';
+                    bk.progress = 100;
+                } else {
+                    bk.status = 'To Read';
+                    bk.progress = 0;
+                }
+                saveState();
+            }
+        }
+
+        function adjustBookProgress(id) {
+            const bk = state.books.find(b => b.id === id);
+            if (bk && bk.status === 'Reading') {
+                openModal('Set Page Progress', `
+                    <div class="space-y-4 text-left">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Percentage Progress (0 - 100)</label>
+                            <input type="number" id="modal-book-percentage" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" value="${bk.progress}">
+                        </div>
+                    </div>
+                `, `
+                    <button onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-[#8D6E63] hover:text-[#4E342E]">Cancel</button>
+                    <button onclick="submitBookProgress(${id})" class="px-4 py-2 text-xs font-semibold bg-[#E8C5C8] text-[#4E342E] rounded-xl shadow-sm hover:bg-[#8D6E63] hover:text-white transition">Update Progress</button>
+                `);
+            }
+        }
+
+        function submitBookProgress(id) {
+            const val = parseInt(document.getElementById('modal-book-percentage').value, 10);
+            if (isNaN(val) || val < 0 || val > 100) return;
+
+            const bk = state.books.find(b => b.id === id);
+            if (bk) {
+                bk.progress = val;
+                if (val === 100) bk.status = 'Finished';
+                closeModal();
+                saveState();
+            }
+        }
+
+        function deleteBook(id) {
+            state.books = state.books.filter(b => b.id !== id);
+            saveState();
+        }
+
+        // COZY BUCKET LIST SYSTEM
+        function renderBucketList() {
+            const container = document.getElementById('bucket-container');
+            container.innerHTML = '';
+
+            state.bucketList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `p-3.5 rounded-2xl border flex justify-between items-center transition duration-200 shadow-sm ${item.achieved ? 'bg-[#FAF0E6]/30 border-[#E8C5C8]/40 text-[#8D6E63]/70' : 'bg-white border-[#8D6E63]/10 text-[#4E342E]'}`;
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3 flex-1 min-w-0">
+                        <button onclick="toggleBucket(${item.id})" class="w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition ${item.achieved ? 'bg-[#E8C5C8] border-[#E8C5C8] text-[#4E342E]' : 'border-[#8D6E63]/30 hover:border-[#E8C5C8] bg-transparent'}">
+                            ${item.achieved ? '<i class="fa-solid fa-check text-[8px]"></i>' : ''}
+                        </button>
+                        <div class="truncate flex-1">
+                            <span class="text-sm font-semibold truncate block ${item.achieved ? 'line-through' : ''}">${item.objective}</span>
+                            <span class="text-[9px] font-bold text-[#E8C5C8] tracking-wider uppercase">${item.category}</span>
+                        </div>
+                    </div>
+                    <button onclick="deleteBucket(${item.id})" class="text-[#8D6E63]/30 hover:text-red-500 transition ml-2 shrink-0"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addBucketItem() {
+            openModal('Add Bucket Dream', `
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Dream Objective</label>
+                        <input type="text" id="modal-bucket-obj" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" placeholder="e.g., Build greenhouse patio">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Theme Tag</label>
+                        <input type="text" id="modal-bucket-cat" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" placeholder="e.g., Living, Adventure, Skill">
+                    </div>
+                </div>
+            `, `
+                <button onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-[#8D6E63] hover:text-[#4E342E]">Cancel</button>
+                <button onclick="submitNewBucketItem()" class="px-4 py-2 text-xs font-semibold bg-[#E8C5C8] text-[#4E342E] rounded-xl shadow-sm hover:bg-[#8D6E63] hover:text-white transition">Embed Dream</button>
+            `);
+        }
+
+        function submitNewBucketItem() {
+            const objective = document.getElementById('modal-bucket-obj').value.trim();
+            const category = document.getElementById('modal-bucket-cat').value.trim();
+
+            if (!objective) return;
+
+            state.bucketList.push({
+                id: Date.now(),
+                objective: objective,
+                category: category || "Dream Vibe",
+                achieved: false
+            });
+            closeModal();
+            saveState();
+        }
+
+        function toggleBucket(id) {
+            const item = state.bucketList.find(b => b.id === id);
+            if (item) item.achieved = !item.achieved;
+            saveState();
+        }
+
+        function deleteBucket(id) {
+            state.bucketList = state.bucketList.filter(b => b.id !== id);
+            saveState();
+        }
+
+        // COZY SYSTEM HARD RESET DATA ENGINE
+        function clearAllData() {
+            localStorage.removeItem('myMindStateCozy');
+            state = JSON.parse(JSON.stringify(defaultState));
+            saveState();
+        }
+
+        function openSyncSettingsModal() {
+            openModal('Google Sheet Cloud Integration', `
+                <div class="space-y-4 text-left">
+                    <p class="text-xs text-[#8D6E63] leading-relaxed">
+                        Establish cross-device sync to share your dashboard safely between your laptop and phone browser windows. View instructions in the <strong>Google Sheet Cloud Setup</strong> file tab.
+                    </p>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#8D6E63] mb-1">Apps Script Web App Endpoint URL</label>
+                        <input type="text" id="modal-sync-url" class="w-full bg-white border border-[#8D6E63]/10 rounded-xl px-3 py-2 text-sm text-[#4E342E]" placeholder="https://script.google.com/macros/s/.../exec" value="${state.syncUrl || ''}">
+                    </div>
+                </div>
+            `, `
+                <button onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-[#8D6E63] hover:text-[#4E342E]">Cancel</button>
+                <button onclick="unlinkSyncUrl()" class="px-4 py-2 text-xs font-semibold text-rose-600 hover:text-rose-700">Disconnect</button>
+                <button onclick="submitSyncUrl()" class="px-4 py-2 text-xs font-semibold bg-[#E8C5C8] text-[#4E342E] rounded-xl shadow-sm hover:bg-[#8D6E63] hover:text-white transition">Verify & Save</button>
+            `);
+        }
+
+        async function submitSyncUrl() {
+            const url = document.getElementById('modal-sync-url').value.trim();
+            if (!url) return;
+
+            state.syncUrl = url;
+            closeModal();
+            saveState();
+
+            triggerSystemNotification("Verifying Connection", "Testing credentials with Google Apps Script Web App...");
+            await saveToCloud();
+
+            if (document.getElementById('sync-status-text').innerText === 'Cloud Synced') {
+                triggerSystemNotification("Sync Successful!", "All dashboard features are locked to your active spreadsheet database.");
+            } else {
+                triggerSystemNotification("Sync Test Failed", "Check authorization privileges inside your Apps Script settings.", true);
+            }
+        }
+
+        function unlinkSyncUrl() {
+            state.syncUrl = "";
+            closeModal();
+            saveState();
+            updateSyncStatus('none');
+            triggerSystemNotification("Sync Severed", "Running exclusively on offline browser storage parameters.");
+        }
+
+        // UTILITY COZY MODAL CONTROLLERS
+        function openModal(title, bodyHtml, actionsHtml) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body-content').innerHTML = bodyHtml;
+            document.getElementById('modal-actions').innerHTML = actionsHtml;
+
+            const modal = document.getElementById('cozy-custom-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('div').classList.remove('scale-95');
+                modal.querySelector('div').classList.add('scale-100');
+            }, 50);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('cozy-custom-modal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.remove('scale-100');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function showConfirmModal(title, text, confirmCallback) {
+            openModal(title, `
+                <p class="text-sm text-[#8D6E63] leading-relaxed">${text}</p>
+            `, `
+                <button onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-[#8D6E63] hover:text-[#4E342E]">Cancel</button>
+                <button id="modal-confirm-action-btn" class="px-4 py-2 text-xs font-semibold bg-rose-500 text-white rounded-xl shadow-sm hover:bg-rose-600 transition">Proceed</button>
+            `);
+
+            document.getElementById('modal-confirm-action-btn').onclick = function() {
+                confirmCallback();
+                closeModal();
+            };
+        }
+
+        // COZY MORNING & NIGHT INTERACTION PINGS
+        function triggerSystemNotification(title, message, isNight = false) {
+            const container = document.getElementById('checkin-notification');
+            const notifTitle = document.getElementById('notif-title');
+            const notifMessage = document.getElementById('notif-message');
+            const notifSender = document.getElementById('notif-sender');
+            const notifIconBox = document.getElementById('notif-icon-box');
+
+            notifTitle.innerText = title;
+            notifMessage.innerText = message;
+            
+            if (isNight) {
+                notifSender.innerText = "COZY NIGHT CHECK-IN";
+                notifSender.className = "text-xs font-bold uppercase tracking-wider text-stone-600";
+                notifIconBox.className = "w-10 h-10 rounded-xl bg-[#8D6E63]/20 text-[#8D6E63] flex items-center justify-center shrink-0";
+                notifIconBox.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else {
+                notifSender.innerText = "MORNING ALIGNMENT PING";
+                notifSender.className = "text-xs font-bold uppercase tracking-wider text-[#8D6E63]";
+                notifIconBox.className = "w-10 h-10 rounded-xl bg-[#E8C5C8]/20 text-[#4E342E] flex items-center justify-center shrink-0";
+                notifIconBox.innerHTML = '<i class="fa-solid fa-mug-hot"></i>';
+            }
+
+            container.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+            container.classList.add('translate-y-0', 'opacity-100');
+        }
+
+        function dismissNotification() {
+            const container = document.getElementById('checkin-notification');
+            container.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+            container.classList.remove('translate-y-0', 'opacity-100');
+        }
+
+        function simulateMorningCheckin() {
+            const focusPoints = [state.focus.focus1, state.focus.focus2].filter(Boolean);
+            const msg = focusPoints.length > 0 
+                ? `Good morning! Your top committed focus nodes for today: "${focusPoints.join(' & ')}". Stay aligned and steady.` 
+                : "Good morning! Your focus targets look empty. Head over to Home & Vision tab to lock in your daily nodes.";
+            triggerSystemNotification("Mind Synthesis Call", msg, false);
+        }
+
+        function simulateNightCheckin() {
+            const pendingTasks = state.tasks.filter(t => !t.completed).length;
+            const msg = pendingTasks > 0 
+                ? `Peaceful evening check-in. You have ${pendingTasks} active daily actions remaining. Did you complete them or hit your gym/physical goals?`
+                : "Fabulous alignment today. Every single action item on your memory is logged completed. Go log some victories in your Wins box!";
+            triggerSystemNotification("Evening Reflection Audit", msg, true);
+        }
+
+        // WINDOW LAUNCHER ENTRY
+        window.onload = async function() {
+            setupDates();
+            if (state.syncUrl) {
+                updateSyncStatus('syncing');
+                await loadFromCloud();
+            } else {
+                renderAll();
+            }
+        };
+    </script>
+</body>
+</html>
